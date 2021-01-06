@@ -359,7 +359,7 @@ function CountMines (index) {
 }
 
 // function OpenAllSquares (squaresValues, squaresCSS, game, win) {
-function OpenAllSquares (win = false) {
+function OpenAllSquares (win) {
   const { squaresValues, squaresCSS, minesPositions, mineSymbol } = game;
 
   for (let index = 0, length = squaresValues.length; index < length; index++) {
@@ -379,7 +379,7 @@ function OpenAllSquares (win = false) {
   return;
 }
 
-function OpenSquare (index, win = false) {
+function OpenSquare (index, win) {
   const { minesPositions, squaresValues, squaresCSS } = game;
 
   if (win) {
