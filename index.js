@@ -363,7 +363,6 @@ function OpenAllSquares (win) {
   const { squaresValues, squaresCSS, minesPositions, mineSymbol } = game;
 
   for (let index = 0, length = squaresValues.length; index < length; index++) {
-      if (squaresCSS[index]) continue;
       if (minesPositions.includes(index)) {
           squaresValues[index] = squaresCSS[index] === 'saved' || win ? '\u2713' : mineSymbol;
           squaresCSS[index] = squaresCSS[index] === 'saved' || win ? 'saved-true' : 'clicked exploded';
