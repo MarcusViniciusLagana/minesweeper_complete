@@ -7,7 +7,6 @@ import GameInfo from './gameinfo';
 import Menu from './menu';
 import OverScreen from './overscreen';
 import * as screens from './screens.json';
-import * as sqr from './squaresf';
 import './index.css';
 
 class Game extends React.Component {
@@ -46,11 +45,11 @@ class Game extends React.Component {
         const {gameID, rowsNumber, columnsNumber, minesNumber} = this.state;
         let response = {status: null};
 
-        if (gameID)  response = await sqr.restartGame({gameID, rowsNumber, columnsNumber, minesNumber});
+        if (gameID)  response = await request({gameID, rowsNumber, columnsNumber, minesNumber}, 'PUT', '/Restart');
         if (!gameID || response.status === 'failed') {
             const { cookies } = this.props;
             cookies.remove();
-            const { gameID } = await sqr.startNewGame({rowsNumber, columnsNumber, minesNumber});
+            const { gameID } = await request({rowsNumber, columnsNumber, minesNumber}, 'POST', '/Init');
             cookies.set('gameID', gameID);
             this.setState({ gameID });
         }
@@ -64,7 +63,7 @@ class Game extends React.Component {
         if (!rowsNumber) rowsNumber = this.state.rowsNumber;
         if (!columnsNumber) columnsNumber = this.state.columnsNumber;
         
-        await sqr.restartGame({gameID: this.state.gameID, rowsNumber, columnsNumber, minesNumber});
+        await request({gameID: this.state.gameID, rowsNumber, columnsNumber, minesNumber}, 'PUT', '/Restart');
         
         // resseting timer
         const time = this.state.initialTime;
@@ -103,9 +102,9 @@ class Game extends React.Component {
                 this.setState({ time });
                 // if time is up: game over
                 if (time <= 0) {
-                    sqr.timeIsUp({gameID, level: this.state.level});
                     this.setState({ phase: 'game-over', msg: 'Time is Over!' });
                     clearInterval(Game.timerID);
+                    await request({gameID, level: this.state.level}, 'PUT', '/TimeIsUp');
                 }
             },1000);
         }
@@ -115,7 +114,7 @@ class Game extends React.Component {
             // if square was already clicked, then return.
             if (squaresCSS[index]) return;
 
-            const data = await sqr.OpenSquare({gameID, index, updates: Game.updates, level: this.state.level});
+            const data = await request({gameID, index, updates: Game.updates, level: this.state.level}, 'PUT', '/OpenSquare');
             Game.updates = [];
             squaresValues = data.squaresValues;
             squaresCSS = data.squaresCSS;
@@ -152,7 +151,7 @@ class Game extends React.Component {
             phase = 'game-over';
             msg = 'Victory!';
             clearInterval(Game.timerID);
-            const data = await sqr.OpenSquare({gameID, index, updates: Game.updates, level: this.state.level, win: true});
+            const data = await request({gameID, index, updates: Game.updates, level: this.state.level, wn: true}, 'PUT', '/OpenSquare');
             Game.updates = [];
             squaresValues = data.squaresValues;
             squaresCSS = data.squaresCSS;
@@ -228,6 +227,18 @@ class Game extends React.Component {
             </div>
         </>);
     }
+}
+
+async function request (body, method, endpoint) {
+    const requestOptions = {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+    };
+    const response = await fetch(`/api${endpoint}`, requestOptions);
+    const data = await response.json();
+    console.log(data.msg);
+    return data;
 }
 
 const GameApp = withCookies(Game)

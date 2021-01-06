@@ -1,5 +1,5 @@
 const express = require('express');
-const cors = require('cors');
+//const cors = require('cors');
 const bodyParser = require('body-parser');
 const path = require('path');
 const mongodb = require('mongodb');
@@ -19,7 +19,7 @@ const client = await mongodb.MongoClient.connect(connectionString, options);
 
 const app = express();
 app.use(bodyParser.json());
-app.use(cors());
+//app.use(cors());
 // Serve static files from the React app
 app.use(express.static(path.join(__dirname, 'client/build')));
 
