@@ -301,7 +301,7 @@ p {
 
 .input:last-child { text-align: right; }
 
-.restart { margin-top: calc(40px * var(--scale)); }
+.restart { margin-top: calc(20px * var(--scale)); }
 
 .restart-button {
     font-size: calc(34px * var(--scale));

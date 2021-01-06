@@ -96,7 +96,7 @@ class Game extends React.Component {
         // If it is the first click, initializes clock
         if (phase === 'paused') {
             phase = 'playing'
-            if (!Game.timerID) Game.timerID = setInterval(() => {
+            if (!Game.timerID) Game.timerID = setInterval(async () => {
                 let time = this.state.time;
                 time--;
                 this.setState({ time });
