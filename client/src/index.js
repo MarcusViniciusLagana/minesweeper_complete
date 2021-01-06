@@ -151,7 +151,7 @@ class Game extends React.Component {
             phase = 'game-over';
             msg = 'Victory!';
             clearInterval(Game.timerID);
-            const data = await request({gameID, index, updates: Game.updates, level: this.state.level, wn: true}, 'PUT', '/OpenSquare');
+            const data = await request({gameID, index, updates: Game.updates, level: this.state.level, win: true}, 'PUT', '/OpenSquare');
             Game.updates = [];
             squaresValues = data.squaresValues;
             squaresCSS = data.squaresCSS;

@@ -164,7 +164,7 @@ app.put('/api/OpenSquare', async (req, res) => {
   }
   
   // Returning Updated Values =========================================================================
-  const message = {status: 'ok', msg: 'Square Opened successfully'};
+  const message = {status: 'ok', msg: `Square ${index} Opened successfully`};
   message.exploded = OpenSquare(index, win)
   message.squaresValues = game.squaresValues;
   message.squaresCSS = game.squaresCSS;
