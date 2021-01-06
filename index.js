@@ -181,7 +181,7 @@ app.put('/api/OpenSquare', async (req, res) => {
       game.stats.playedHard += 1;
       if (win) game.stats.wonHard += 1;
     }
-    await mensagens.updateOne(
+    await games.updateOne(
       { _id: mongodb.ObjectId(gameID) },
       { $set: game.stats }
     );
@@ -221,7 +221,7 @@ app.put('/api/TimeIsUp', async (req, res) => {
   else
     game.stats.playedHard += 1;
   
-  await mensagens.updateOne(
+  await game.updateOne(
     { _id: mongodb.ObjectId(gameID) },
     { $set: game.stats }
   );
