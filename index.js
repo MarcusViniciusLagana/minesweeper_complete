@@ -182,13 +182,54 @@ app.put('/api/OpenSquare', async (req, res) => {
       if (win) game.stats.wonHard += 1;
     }
     await mensagens.updateOne(
-      { _id: mongodb.ObjectId(id) },
-      { $set: req.body }
+      { _id: mongodb.ObjectId(gameID) },
+      { $set: game.stats }
     );
   }
 
   res.send(message);
 });
+
+
+
+
+
+
+
+// ==================== TimeIsUp ================================================================== PUT
+app.put('/api/TimeIsUp', async (req, res) => {
+  const gameID = req.body.gameID;
+
+  // Validating id ====================================================================================
+  if (game.gameID !== gameID) {
+    res.send({status: 'failed', msg: `Game ${gameID} not found`});
+    return;
+  }
+
+  // Validating Body ==================================================================================
+  const { level } = req.body;
+
+  if (level !== 'easy' && level !== 'intermediate' && level !== 'hard') {
+    res.send({status: 'failed', msg: `Invalid level: ${level}`});
+    return;
+  }
+  
+  if (level === 'easy')
+    game.stats.playedEasy += 1;
+  else if (level === 'intermediate')
+    game.stats.playedIntermediate += 1;
+  else
+    game.stats.playedHard += 1;
+  
+  await mensagens.updateOne(
+    { _id: mongodb.ObjectId(gameID) },
+    { $set: game.stats }
+  );
+
+  res.send({status: 'ok', msg: `Game ${gameID} stats updated`});
+});
+
+
 
 
 

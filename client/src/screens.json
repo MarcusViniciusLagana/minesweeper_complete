@@ -1,0 +1,129 @@
+{
+    "initial": [
+        {
+            "type": "div",
+            "activeCSS": "basic initial",
+            "deactiveCSS": "basic initial vanish",
+            "content": [
+                {
+                    "type": "img",
+                    "activeCSS": "initial-img",
+                    "deactiveCSS": "initial-img vanish",
+                    "alt": "background",
+                    "src": "./Minebackground.png"
+                },
+                {
+                    "type": "img",
+                    "activeCSS": "initial-img mine",
+                    "deactiveCSS": "initial-img mine vanish",
+                    "alt": "Mine by Samuel Schoenberger from the Noun Project",
+                    "src": "./MinelogoSolo.png"
+                },
+                {
+                    "type": "div",
+                    "activeCSS": "initial-txt",
+                    "deactiveCSS": "initial-txt vanish",
+                    "content": [
+                        {
+                            "type": "text",
+                            "content": ["* Mine icon by Samuel Schoenberger from the Noun Project"]
+                        }
+                    ]
+                },
+                {
+                    "type": "btn",
+                    "activeCSS": "restart-button btn-position",
+                    "deactiveCSS": "restart-button btn-position vanish",
+                    "text": "START"
+                }
+            ]
+        }
+    ],
+    "victory": [
+        {
+            "type": "div",
+            "activeCSS": "basic transparent",
+            "deactiveCSS": "basic transparent",
+            "content": [
+                {
+                    "type": "div",
+                    "activeCSS": "basic-bg victory",
+                    "deactiveCSS": "basic-bg victory",
+                    "content": [
+                        {
+                            "type": "text",
+                            "content": ["VICTORY !!!"]
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "time": [
+        {
+            "type": "div",
+            "activeCSS": "basic transparent",
+            "deactiveCSS": "basic transparent",
+            "content": [
+                {
+                    "type": "div",
+                    "activeCSS": "basic-bg time",
+                    "deactiveCSS": "basic-bg time",
+                    "content": [
+                        {
+                            "type": "text",
+                            "content": ["Time is Over !!!"]
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "explode": [
+        {
+            "type": "div",
+            "activeCSS": "basic blood-transparent",
+            "deactiveCSS": "basic blood",
+            "content": [
+                {
+                    "type": "img",
+                    "activeCSS": "explosion-position bomb",
+                    "deactiveCSS": "explosion-position bomb",
+                    "alt": "explosion",
+                    "src": "./explosion.png"
+                },
+                {
+                    "type": "div",
+                    "activeCSS": "foot-movement",
+                    "deactiveCSS": "foot-movement",
+                    "content": [
+                        {
+                            "type": "img",
+                            "activeCSS": "explosion-position foot",
+                            "deactiveCSS": "explosion-position foot",
+                            "alt": "foot",
+                            "src": "./foot.png"
+                        }
+                    ]
+                },
+                {
+                    "type": "div",
+                    "activeCSS": "no-text",
+                    "deactiveCSS": "basic-bg yes-text",
+                    "content": [
+                        {
+                            "type": "text",
+                            "content": ["You Died !!!"]
+                        }
+                    ]
+                },
+                {
+                    "type": "btn",
+                    "activeCSS": "basic transparent",
+                    "deactiveCSS": "basic transparent",
+                    "text": null
+                }
+            ]
+        }
+    ]
+}
