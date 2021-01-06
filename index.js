@@ -27,7 +27,7 @@ const games = client.db('minesweeper').collection('games');
 
 function getValidGames () { return games.find({}).toArray(); }
 
-function getGameByID (id) { return games.findOne({ _id: mongodb.ObjectId(id) }); }
+function getGameByID (id) { return games.findOne({ _id: id }); }
 
 function sortMinesPositions (minesNumber, rowsNumber, columnsNumber) {
   const minesPositions = Array(minesNumber);
@@ -112,7 +112,7 @@ app.post('/api/Init', async (req, res) => {
     return;
   }
 
-  game.gameID = '' + insertedId;
+  game.gameID = insertedId;
   // Returning game id ================================================================================
   res.send({ status: 'ok', msg: `Game ${insertedId} created successfully`, gameID: insertedId});
 });
@@ -134,7 +134,7 @@ app.get('/api/data', async (req, res) => {
 
 // ==================== Open a Square and update state in the front-end =========================== PUT
 app.put('/api/OpenSquare', async (req, res) => {
-  const gameID = req.body.gameID;
+  const gameID = mongodb.ObjectId(req.body.gameID);
 
   // Validating id ====================================================================================
   if (game.gameID !== gameID) {
@@ -182,7 +182,7 @@ app.put('/api/OpenSquare', async (req, res) => {
       if (win) game.stats.wonHard += 1;
     }
     await games.updateOne(
-      { _id: mongodb.ObjectId(gameID) },
+      { _id: gameID },
       { $set: game.stats }
     );
   }
@@ -198,7 +198,7 @@ app.put('/api/OpenSquare', async (req, res) => {
 
 // ==================== TimeIsUp ================================================================== PUT
 app.put('/api/TimeIsUp', async (req, res) => {
-  const gameID = req.body.gameID;
+  const gameID = mongodb.ObjectId(req.body.gameID);
 
   // Validating id ====================================================================================
   if (game.gameID !== gameID) {
@@ -222,7 +222,7 @@ app.put('/api/TimeIsUp', async (req, res) => {
     game.stats.playedHard += 1;
   
   await game.updateOne(
-    { _id: mongodb.ObjectId(gameID) },
+    { _id: gameID },
     { $set: game.stats }
   );
 
@@ -238,7 +238,7 @@ app.put('/api/TimeIsUp', async (req, res) => {
 
 // ==================== Restart the Game ========================================================== PUT
 app.put('/api/Restart', async (req, res) => {
-  const gameID = req.body.gameID;
+  const gameID = mongodb.ObjectId(req.body.gameID);
 
   // Validating id ====================================================================================
   if (!game) game = await getGameByID(gameID);
@@ -286,16 +286,16 @@ app.put('/api/Restart', async (req, res) => {
 
 // ==================== Remove Game ============================================================ DELETE
 app.delete('/api/end', async (req, res) => {
-  const gameID = req.body.gameID;
+  const gameID = mongodb.ObjectId(req.body.gameID);
 
   // Validating id ====================================================================================
-  if (await games.countDocuments({ _id: mongodb.ObjectId(gameID) }) !== 1) {
+  if (await games.countDocuments({ _id: gameID }) !== 1) {
     res.send({status: 'failed', msg: `Game ${gameID} not found`});
     return;
   }
 
   // Deleting =========================================================================================
-  const { deletedCount } = await games.deleteOne({ _id: mongodb.ObjectId(gameID) });
+  const { deletedCount } = await games.deleteOne({ _id: gameID });
 
   // // Validating deletion ===========================================================================
   if (deletedCount !== 1) {

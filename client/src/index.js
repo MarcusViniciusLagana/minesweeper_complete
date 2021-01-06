@@ -104,6 +104,7 @@ class Game extends React.Component {
                 if (time <= 0) {
                     this.setState({ phase: 'game-over', msg: 'Time is Over!' });
                     clearInterval(Game.timerID);
+                    Game.updates = [];
                     await request({gameID, level: this.state.level}, 'PUT', '/TimeIsUp');
                 }
             },1000);
