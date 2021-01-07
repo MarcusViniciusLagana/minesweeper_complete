@@ -45,7 +45,7 @@ class Game extends React.Component {
         const {gameID, rowsNumber, columnsNumber, minesNumber} = this.state;
         let response = {status: null};
 
-        if (gameID)  response = await request({gameID, rowsNumber, columnsNumber, minesNumber}, 'PUT', '/Restart');
+        if (gameID) response = await request({gameID, rowsNumber, columnsNumber, minesNumber}, 'PUT', '/Restart');
         if (!gameID || response.status === 'failed') {
             const { cookies } = this.props;
             cookies.remove();

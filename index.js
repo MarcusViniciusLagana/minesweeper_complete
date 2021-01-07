@@ -1,10 +1,10 @@
 const express = require('express');
-//const cors = require('cors');
 const bodyParser = require('body-parser');
 const path = require('path');
+//const process = require('./dev');
 const mongodb = require('mongodb');
 
-const port = process.env.PORT || 3005;
+const port = process.env.PORT || 5000;
 
 let game = null;
 
@@ -19,7 +19,6 @@ const client = await mongodb.MongoClient.connect(connectionString, options);
 
 const app = express();
 app.use(bodyParser.json());
-//app.use(cors());
 // Serve static files from the React app
 app.use(express.static(path.join(__dirname, 'client/build')));
 
@@ -27,7 +26,7 @@ const games = client.db('minesweeper').collection('games');
 
 function getValidGames () { return games.find({}).toArray(); }
 
-function getGameByID (id) { return games.findOne({ _id: id }); }
+function getGameByID (id) { return games.findOne({ _id: mongodb.ObjectId(id) }); }
 
 function sortMinesPositions (minesNumber, rowsNumber, columnsNumber) {
   const minesPositions = Array(minesNumber);
@@ -112,7 +111,7 @@ app.post('/api/Init', async (req, res) => {
     return;
   }
 
-  game.gameID = insertedId;
+  game.gameID = '' + insertedId; // String
   // Returning game id ================================================================================
   res.send({ status: 'ok', msg: `Game ${insertedId} created successfully`, gameID: insertedId});
 });
@@ -134,7 +133,7 @@ app.get('/api/data', async (req, res) => {
 
 // ==================== Open a Square and update state in the front-end =========================== PUT
 app.put('/api/OpenSquare', async (req, res) => {
-  const gameID = mongodb.ObjectId(req.body.gameID);
+  const gameID = req.body.gameID;
 
   // Validating id ====================================================================================
   if (game.gameID !== gameID) {
@@ -182,7 +181,7 @@ app.put('/api/OpenSquare', async (req, res) => {
       if (win) game.stats.wonHard += 1;
     }
     await games.updateOne(
-      { _id: gameID },
+      { _id: mongodb.ObjectId(gameID) },
       { $set: game.stats }
     );
   }
@@ -198,7 +197,7 @@ app.put('/api/OpenSquare', async (req, res) => {
 
 // ==================== TimeIsUp ================================================================== PUT
 app.put('/api/TimeIsUp', async (req, res) => {
-  const gameID = mongodb.ObjectId(req.body.gameID);
+  const gameID = req.body.gameID;
 
   // Validating id ====================================================================================
   if (game.gameID !== gameID) {
@@ -221,8 +220,8 @@ app.put('/api/TimeIsUp', async (req, res) => {
   else
     game.stats.playedHard += 1;
   
-  await game.updateOne(
-    { _id: gameID },
+  await games.updateOne(
+    { _id: mongodb.ObjectId(gameID) },
     { $set: game.stats }
   );
 
@@ -238,17 +237,24 @@ app.put('/api/TimeIsUp', async (req, res) => {
 
 // ==================== Restart the Game ========================================================== PUT
 app.put('/api/Restart', async (req, res) => {
-  const gameID = mongodb.ObjectId(req.body.gameID);
+  const gameID = req.body.gameID;
+  let stats;
 
   // Validating id ====================================================================================
-  if (!game) game = await getGameByID(gameID);
+  if (!game) {
+    game = {}
+    stats = await getGameByID(gameID);
+    game.gameID = '' + stats._id; //String
+    delete stats._id;
+    game.stats = stats;
+  }
   if (game.gameID !== gameID) {
     res.send({status: 'failed', msg: `Game ${gameID} not found`});
     return;
   }
 
   const { minesNumber, rowsNumber, columnsNumber } = req.body;
-  const { stats } = game;
+  stats = game.stats;
 
   // Validating Body ==================================================================================
   const message = verifyBody(minesNumber, rowsNumber, columnsNumber);
@@ -286,16 +292,16 @@ app.put('/api/Restart', async (req, res) => {
 
 // ==================== Remove Game ============================================================ DELETE
 app.delete('/api/end', async (req, res) => {
-  const gameID = mongodb.ObjectId(req.body.gameID);
+  const gameID = req.body.gameID;
 
   // Validating id ====================================================================================
-  if (await games.countDocuments({ _id: gameID }) !== 1) {
+  if (await games.countDocuments({ _id: mongodb.ObjectId(gameID) }) !== 1) {
     res.send({status: 'failed', msg: `Game ${gameID} not found`});
     return;
   }
 
   // Deleting =========================================================================================
-  const { deletedCount } = await games.deleteOne({ _id: gameID });
+  const { deletedCount } = await games.deleteOne({ _id: mongodb.ObjectId(gameID) });
 
   // // Validating deletion ===========================================================================
   if (deletedCount !== 1) {
@@ -306,8 +312,8 @@ app.delete('/api/end', async (req, res) => {
 });
 
 
-// The "catchall" handler: for any request that doesn't
-// match one above, send back React's index.html file.
+// "Catchall" handler: for any request that doesn't match
+// the ones above, send back React's index.html file.
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname+'/client/build/index.html'));
 });
