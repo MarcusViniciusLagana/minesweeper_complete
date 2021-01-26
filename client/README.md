@@ -1,10 +1,10 @@
-# Getting Started with Create React App
+# Minesweeper
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A learning project created with React, Express and MongoDB.
 
-## Available Scripts
+## Introduction
 
-In the project directory, you can run:
+Minesweeper was one of the first games I played. Back in the '90s, I used 
 
 ### `npm start`
 
