@@ -27,7 +27,13 @@ const games = client.db('minesweeper').collection('games');
 
 function getValidGames () { return games.find({}).toArray(); }
 
-function getGameByID (id) { return games.findOne({ _id: mongodb.ObjectId(id) }); }
+function getGameByID (id) {
+  try {
+    return games.findOne({ _id: mongodb.ObjectId(id) });
+  } catch {
+    return null;
+  }
+}
 
 function sortMinesPositions (minesNumber, rowsNumber, columnsNumber) {
   const minesPositions = Array(minesNumber);
@@ -146,10 +152,10 @@ app.post('/api/Init', async (req, res) => {
   };
 
   if (game.gameID) {
-    if (await games.countDocuments({ _id: mongodb.ObjectId(gameID) }) === 1) {
-      stats = await getGameByID(game.gameID);
-      delete stats._id;
-      game.stats = stats;
+    response = await getGameByID(game.gameID);
+    if (response) {
+      delete response._id;
+      game.stats = response;
       text = 'restarted'
     } else {
       game.gameID = null;
