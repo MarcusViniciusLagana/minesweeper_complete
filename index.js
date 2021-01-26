@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
-//const process = require('./dev');
+const process = require('./dev');
 const mongodb = require('mongodb');
 
 const port = process.env.PORT || 5000;
@@ -398,7 +398,7 @@ function OpenAllSquares () {
   updates = {indexes: [], values: []};
 
   for (let index = 0, length = squaresValues.length; index < length; index++) {
-      if (!squaresCSS[index] || squaresCSS[index] === 'saved') {
+      if (!squaresCSS[index].includes('clicked')) {
           updates.indexes.push(index);
           if (minesPositions.includes(index))
               squaresValues[index] = squaresCSS[index] === 'saved' ? '\u2713' : mineSymbol;

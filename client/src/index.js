@@ -41,9 +41,9 @@ class Game extends React.Component {
     // when mounting, set timer to null
     async componentDidMount () {
         const {gameID, rowsNumber, columnsNumber, minesNumber} = this.state;
-        let response = {status: null};
+        let response = {gameID};
 
-        response = await request({gameID, rowsNumber, columnsNumber, minesNumber}, 'PUT', '/Init');
+        response = await request({gameID, rowsNumber, columnsNumber, minesNumber}, 'POST', '/Init');
         if (gameID !== response.gameID) {
             const { cookies } = this.props;
             cookies.remove();
@@ -114,7 +114,7 @@ class Game extends React.Component {
         // if clicked with left button
         if (button === 'left') {
             
-            // if square was already clicked, then return.
+            // if square was already clicked or is saved, then return.
             if (squaresCSS[index]) return;
 
             const data = await request({gameID, index, updates: Game.updates }, 'PUT', '/OpenSquare');
@@ -129,7 +129,7 @@ class Game extends React.Component {
                     squaresCSS[data.updates.indexes[i]] = 'clicked ' + cssClasses[data.updates.values[i]];
                 else if (data.updates.values[i] === '\u2713')
                     squaresCSS[data.updates.indexes[i]] = 'saved-true';
-                else if (data.updates.values[i] === '\u2713')
+                else if (data.updates.values[i] === '\u2717')
                     squaresCSS[data.updates.indexes[i]] = 'exploded';
                 else
                     squaresCSS[data.updates.indexes[i]] = 'clicked exploded';
@@ -150,7 +150,7 @@ class Game extends React.Component {
         // if clicked with right button
         } else if (button === 'right') {
             // if the button is clicked, return
-            if (squaresCSS[index] && squaresCSS[index] !== 'saved') return;
+            if (squaresCSS[index].includes('clicked')) return;
 
             // Cycle through the symbols '' (nothing), '\u2691' (saved) and
             // '?' (maybe) with each click
@@ -174,7 +174,7 @@ class Game extends React.Component {
             clearInterval(Game.timerID);
             await request({gameID, level: this.state.level, win: true}, 'PUT', '/EndGame');
             for (let i = 0; i < squaresCSS.length; i++) {
-                if (squaresCSS[i] === 'saved') {
+                if (!squaresCSS[i].includes('clicked')) {
                     squaresValues[i] = '\u2713';
                     squaresCSS[i] = 'saved-true';
                 }
