@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
-//const process = require('./dev');
+const process = require('./dev');
 const mongodb = require('mongodb');
 
 const port = process.env.PORT || 5000;
@@ -107,6 +107,7 @@ function verifyBody (verify, body) {
 
 // ==================== Initialize a Game ======================================================== POST
 app.post('/api/Init', async (req, res) => {
+  let text = 'created'
 
   // Validating Body ==================================================================================
   const message = verifyBody({minesNumber: true}, req.body);
@@ -145,10 +146,11 @@ app.post('/api/Init', async (req, res) => {
   };
 
   if (game.gameID) {
-    stats = await getGameByID(game.gameID);
-    if (stats) {
+    if (await games.countDocuments({ _id: mongodb.ObjectId(gameID) }) === 1) {
+      stats = await getGameByID(game.gameID);
       delete stats._id;
       game.stats = stats;
+      text = 'restarted'
     } else {
       game.gameID = null;
     }
@@ -167,7 +169,7 @@ app.post('/api/Init', async (req, res) => {
     game.gameID = '' + insertedId; // String
   }
   // Returning game id ================================================================================
-  res.send({ status: 'ok', msg: `Game ${insertedId} created successfully`, gameID: insertedId});
+  res.send({ status: 'ok', msg: `Game ${game.gameID} ${text} successfully`, gameID: game.gameID});
 });
 
 
