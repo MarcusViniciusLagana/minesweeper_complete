@@ -43,11 +43,11 @@ class Game extends React.Component {
         const {gameID, rowsNumber, columnsNumber, minesNumber} = this.state;
         let response = {status: null};
 
-        if (gameID) response = await request({gameID, rowsNumber, columnsNumber, minesNumber}, 'PUT', '/Restart');
-        if (!gameID || response.status === 'failed') {
+        response = await request({gameID, rowsNumber, columnsNumber, minesNumber}, 'PUT', '/Init');
+        if (gameID !== response.gameID) {
             const { cookies } = this.props;
             cookies.remove();
-            const { gameID } = await request({rowsNumber, columnsNumber, minesNumber}, 'POST', '/Init');
+            const { gameID } = response;
             cookies.set('gameID', gameID);
             this.setState({ gameID });
         }

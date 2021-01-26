@@ -115,7 +115,7 @@ app.post('/api/Init', async (req, res) => {
     return;
   };
 
-  const { minesNumber, rowsNumber, columnsNumber } = req.body;
+  const { gameID, minesNumber, rowsNumber, columnsNumber } = req.body;
 
   // Sorting mines positions ==========================================================================
   const minesPositions = sortMinesPositions(minesNumber, rowsNumber, columnsNumber);
@@ -123,7 +123,7 @@ app.post('/api/Init', async (req, res) => {
   // sorting mine symbol ==============================================================================
   const mineSymbol = sortMineSymbol();
 
-  const stats = {
+  let stats = {
     playedEasy: 0,
     wonEasy: 0,
     playedIntermediate: 0,
@@ -133,6 +133,7 @@ app.post('/api/Init', async (req, res) => {
   }
 
   game = {
+    gameID,
     rowsNumber,
     columnsNumber,
     minesNumber,
@@ -143,16 +144,28 @@ app.post('/api/Init', async (req, res) => {
     stats
   };
 
-  // Creating game ====================================================================================
-  const { insertedCount, insertedId } = await games.insertOne(stats);
-
-  // Validating creation ==============================================================================
-  if (insertedCount !== 1) {
-    res.send({status: 'failed', msg: 'Error during creation of the game!'});
-    return;
+  if (game.gameID) {
+    stats = await getGameByID(game.gameID);
+    if (stats) {
+      delete stats._id;
+      game.stats = stats;
+    } else {
+      game.gameID = null;
+    }
   }
 
-  game.gameID = '' + insertedId; // String
+  if (!game.gameID) {
+  // Creating game ====================================================================================
+    const { insertedCount, insertedId } = await games.insertOne(stats);
+
+  // Validating creation ==============================================================================
+    if (insertedCount !== 1) {
+      res.send({status: 'failed', msg: 'Error during creation of the game!'});
+      return;
+    }
+
+    game.gameID = '' + insertedId; // String
+  }
   // Returning game id ================================================================================
   res.send({ status: 'ok', msg: `Game ${insertedId} created successfully`, gameID: insertedId});
 });
